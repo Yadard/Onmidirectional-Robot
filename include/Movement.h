@@ -23,6 +23,10 @@ class Base {
     virtual bool stop();
 };
 
+/*
+ * Used this video as base to make this piece o junk move
+ * video: https://youtu.be/wwQQnSWqB7A
+ */
 class Onmidirectional_3Wheels : public Movement::Base {
   public:
     Onmidirectional_3Wheels(Motor::Base *MotorA, Motor::Base *MotorB, Motor::Base *MotorC);

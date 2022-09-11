@@ -25,7 +25,7 @@ bool Movement::Onmidirectional_3Wheels::applySpeed(uint32_t speed_module, uint16
     double sy = speed_module * sin(radians(angle));
 
     for (size_t i = 0; i < 3; i++) {
-        double watt = sx * movement_matrix[i][0] + sy * movement_matrix[i][1];
+        int watt = sx * movement_matrix[i][0] + sy * movement_matrix[i][1];
         motors[i]->setPower(watt);
     }
 
