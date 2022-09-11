@@ -2,6 +2,7 @@
 #define MOTOR_H
 
 #include <Arduino.h>
+#include <Event.h>
 #include <Servo.h>
 
 namespace Motor {
@@ -22,6 +23,10 @@ class Base {
     virtual bool setPower(Watts_t watts);
 
     virtual Watts_t maxPower();
+
+    virtual Pin_t pin();
+
+    virtual ~Base() {}
 };
 
 /*
@@ -35,14 +40,28 @@ class ContinuousRotationServo : public Motor::Base {
     //@param pin: pin connected to the signal pin of the Servo.
     ContinuousRotationServo(Pin_t pin, uint16_t pwm_max = 180);
 
-    bool setPower(Watts_t watts);
+    bool setPower(Watts_t watts) override;
+    Pin_t pin() override;
 
-    Watts_t maxPower();
+    Watts_t maxPower() override;
 
   private:
     Servo servo;
     uint16_t pwm_max;
 };
 } // namespace Motor
+
+namespace Event {
+class Motor : public Event::Base {
+  public:
+    Motor(::Motor::Base *motor, String &valor);
+    void operator()() override;
+    ~Motor() override;
+
+  private:
+    ::Motor::Base *motor;
+    const String valor;
+};
+} // namespace Event
 
 #endif // MOTOR_H

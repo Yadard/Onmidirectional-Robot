@@ -1,18 +1,19 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
 
+#include <Event.h>
 #include <MatrixMath.h>
 #include <Motor.h>
 
 namespace Movement {
 class Base {
   public:
-    virtual ~Base();
+    virtual ~Base(){};
 
-    //@param speed_module: the speed module
-    //@param angle: angle of the speed.
+    //@param sx: component x of the speed vector.
+    //@param sy: component y of the speed vector.
     //@return true if everything worked well and false if everything went wrong.
-    virtual bool applySpeed(uint32_t speed_module, uint16_t angle);
+    virtual bool applySpeed(double sx, double sy);
 
     //@param deegres: rotate the robot in the deegres specified.
     //@return true if everything worked well and false if everything went wrong.
@@ -30,8 +31,9 @@ class Base {
 class Onmidirectional_3Wheels : public Movement::Base {
   public:
     Onmidirectional_3Wheels(Motor::Base *MotorA, Motor::Base *MotorB, Motor::Base *MotorC);
+    ~Onmidirectional_3Wheels() = default;
 
-    bool applySpeed(uint32_t speed_module, uint16_t angle);
+    bool applySpeed(double sx, double sy);
     bool rotate(uint8_t deegres);
     bool stop();
 
@@ -41,5 +43,18 @@ class Onmidirectional_3Wheels : public Movement::Base {
 };
 
 } // namespace Movement
+
+namespace Event {
+class Movement : public Event::Base {
+  public:
+    Movement(::Movement::Base *mov, double fx, double fy);
+    void operator()() override;
+    ~Movement() override;
+
+  private:
+    ::Movement::Base *mov;
+    double fx, fy;
+};
+} // namespace Event
 
 #endif // MOVEMENT_H

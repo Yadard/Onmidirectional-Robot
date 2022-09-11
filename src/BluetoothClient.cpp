@@ -1,6 +1,6 @@
 #include <BluetoothClient.h>
 
-String BluetoothClient::BluetoothClient::readString() {
+String BluetoothClient::BluetoothClient::readMessage() {
     String str((char *)(this->buffer.data));
     buffer.erase_back(str.length());
     --this->arrived;
