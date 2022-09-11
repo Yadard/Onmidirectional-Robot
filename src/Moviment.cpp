@@ -37,7 +37,7 @@ bool Movement::Onmidirectional_3Wheels::rotate(uint8_t deegres) {
     return false;
 }
 
-bool Movement::Onmidirectional_3Wheels::rotate(uint8_t deegres) {
+bool Movement::Onmidirectional_3Wheels::stop() {
     for (size_t i = 0; i < 3; i++)
         motors[i]->setPower(0);
 

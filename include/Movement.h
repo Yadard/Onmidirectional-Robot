@@ -23,7 +23,7 @@ class Base {
     virtual bool stop();
 };
 
-class Onmidirectional_3Wheels : Movement::Base {
+class Onmidirectional_3Wheels : public Movement::Base {
   public:
     Onmidirectional_3Wheels(Motor::Base *MotorA, Motor::Base *MotorB, Motor::Base *MotorC);
 
