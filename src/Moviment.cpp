@@ -24,8 +24,6 @@ bool Movement::Onmidirectional_3Wheels::applySpeed(double sx, double sy) {
 
     for (size_t i = 0; i < 3; i++) {
         int watt = sx * movement_matrix[i][0] + sy * movement_matrix[i][1];
-        Serial.print("[Movement::Onmidirectional_3Wheels::applySpeed]: watt = ");
-        Serial.println(watt);
         motors[i]->setPower(watt);
     }
 
@@ -44,8 +42,8 @@ bool Movement::Onmidirectional_3Wheels::stop() {
     return true;
 }
 
-Event::Movement::Movement(::Movement::Base *mov, double fx, double fy) : mov(mov), fx(fx), fy(fy) { Serial.println("Movement::Movement()"); }
-Event::Movement::~Movement() { Serial.println("Movement::~Movement()"); }
+Event::Movement::Movement(::Movement::Base *mov, double fx, double fy) : mov(mov), fx(fx), fy(fy) {}
+Event::Movement::~Movement() {  }
 void Event::Movement::operator()() {
     mov->applySpeed(fx, fy);
     delete this;
