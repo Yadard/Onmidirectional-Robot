@@ -5,6 +5,8 @@ Ultrasonic::Sensor::Sensor(pin_t trig, pin_t echo_front, pin_t echo_left, pin_t 
 
 Ultrasonic::Sensor::Data Ultrasonic::Sensor::read(uint8_t it) {
     Data data;
+    float fx = 0, fy = 0;
+
     data.cm_front = (sensor_front.ping_median(it) / 2) * 0.0343;
     data.cm_left = (sensor_left.ping_median(it) / 2) * 0.0343;
     data.cm_right = (sensor_right.ping_median(it) / 2) * 0.0343;

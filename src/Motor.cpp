@@ -1,6 +1,8 @@
 #include <Motor.h>
 
-Motor::ContinuousRotationServo::ContinuousRotationServo(Motor::Pin_t pin, uint16_t pwm_max) : pwm_max(pwm_max) { servo.attach(pin); }
+Motor::ContinuousRotationServo::ContinuousRotationServo(Motor::Pin_t pin, uint16_t pwm_max, bool inverse) : pwm_max(pwm_max), inverse(inverse) {
+    servo.attach(pin);
+}
 
 /*
  * This shit might not work because this motors don't have a fucking label so my best guess is a chinese
@@ -8,11 +10,11 @@ Motor::ContinuousRotationServo::ContinuousRotationServo(Motor::Pin_t pin, uint16
  */
 bool Motor::ContinuousRotationServo::setPower(Watts_t watts) {
     if (watts > maxPower())
-        servo.write(180);
+        servo.write(inverse ? 0 : 180);
     else if (watts < -maxPower())
-        servo.write(0);
+        servo.write(inverse ? 180 : 0);
     else
-        servo.write(map(watts, -60, 60, 0, pwm_max));
+        servo.write(inverse ? map(watts, -60, 60, pwm_max, 0) : map(watts, -60, 60, 0, pwm_max));
     return true;
 }
 
@@ -20,8 +22,8 @@ Motor::Watts_t Motor::ContinuousRotationServo::maxPower() { return 60; }
 
 Motor::Pin_t Motor::ContinuousRotationServo::pin() { return pwm_max; }
 
-Event::Motor::Motor(::Motor::Base *motor, String &valor) : motor(motor), valor(valor) { }
-Event::Motor::~Motor() { }
+Event::Motor::Motor(::Motor::Base *motor, String &valor) : motor(motor), valor(valor) {}
+Event::Motor::~Motor() {}
 
 void Event::Motor::operator()() {
     if (this->valor.length()) {

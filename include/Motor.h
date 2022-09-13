@@ -10,9 +10,9 @@ namespace Motor {
 using Pin_t = uint8_t;
 using Watts_t = int;
 
-constexpr inline Watts_t counterClockWise(Watts_t watts) { return -watts; }
+constexpr inline Watts_t counterClockWise(Watts_t watts) { return watts; }
 
-constexpr inline Watts_t clockWise(Watts_t watts) { return watts; }
+constexpr inline Watts_t clockWise(Watts_t watts) { return -watts; }
 
 class Base {
   public:
@@ -38,7 +38,7 @@ class Base {
 class ContinuousRotationServo : public Motor::Base {
   public:
     //@param pin: pin connected to the signal pin of the Servo.
-    ContinuousRotationServo(Pin_t pin, uint16_t pwm_max = 180);
+    ContinuousRotationServo(Pin_t pin, uint16_t pwm_max = 180, bool inverse = false);
 
     bool setPower(Watts_t watts) override;
     Pin_t pin() override;
@@ -48,6 +48,7 @@ class ContinuousRotationServo : public Motor::Base {
   private:
     Servo servo;
     uint16_t pwm_max;
+    bool inverse;
 };
 } // namespace Motor
 
