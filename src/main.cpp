@@ -12,6 +12,7 @@ Logger logger;
 Event::Base *parseEvent(String &message, Movement::Base *mov, Motor::Base *motors) {
     String values = message.substring(2);
     size_t separator;
+    Motor::ContinuousRotationServo *array;
     switch (message[0]) {
     case 'J':
         LOG_EXPR(Logger::LogLevel::DEBUG, 'J');
@@ -25,7 +26,7 @@ Event::Base *parseEvent(String &message, Movement::Base *mov, Motor::Base *motor
     case 'B':
     case 'C':
         LOG_EXPR(Logger::LogLevel::DEBUG, values);
-        Motor::ContinuousRotationServo *array = static_cast<Motor::ContinuousRotationServo *>(motors);
+        array = static_cast<Motor::ContinuousRotationServo *>(motors);
         return new Event::Motor(&array[message[0] - 'A'], values);
         break;
 
