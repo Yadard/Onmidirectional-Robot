@@ -1,7 +1,6 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
 
-#include <Event.h>
 #include <MatrixMath.h>
 #include <Motor.h>
 
@@ -15,17 +14,13 @@ class Base {
     //@return true if everything worked well and false if everything went wrong.
     virtual bool applySpeed(double sx, double sy);
 
-    //@param deegres: rotate the robot in the deegres specified.
-    //@return true if everything worked well and false if everything went wrong.
-    virtual bool rotate(uint8_t deegres);
-
     // stop the robot
     //@return true if everything worked well and false if everything went wrong.
     virtual bool stop();
 };
 
 /*
- * Used this video as base to make this piece o junk move
+ * Used this video as base
  * video: https://youtu.be/wwQQnSWqB7A
  */
 class Onmidirectional_3Wheels : public Movement::Base {
@@ -34,7 +29,6 @@ class Onmidirectional_3Wheels : public Movement::Base {
     ~Onmidirectional_3Wheels() = default;
 
     bool applySpeed(double sx, double sy);
-    bool rotate(uint8_t deegres);
     bool stop();
 
   private:
@@ -43,18 +37,5 @@ class Onmidirectional_3Wheels : public Movement::Base {
 };
 
 } // namespace Movement
-
-namespace Event {
-class Movement : public Event::Base {
-  public:
-    Movement(::Movement::Base *mov, double fx, double fy);
-    void operator()() override;
-    ~Movement() override;
-
-  private:
-    ::Movement::Base *mov;
-    double fx, fy;
-};
-} // namespace Event
 
 #endif // MOVEMENT_H

@@ -31,21 +31,9 @@ bool Movement::Onmidirectional_3Wheels::applySpeed(double sx, double sy) {
     return true;
 }
 
-bool Movement::Onmidirectional_3Wheels::rotate(uint8_t deegres) {
-    // Not implemented yet.
-    return false;
-}
-
 bool Movement::Onmidirectional_3Wheels::stop() {
     for (size_t i = 0; i < 3; i++)
         motors[i]->setPower(0);
 
     return true;
-}
-
-Event::Movement::Movement(::Movement::Base *mov, double fx, double fy) : mov(mov), fx(fx), fy(fy) {}
-Event::Movement::~Movement() {}
-void Event::Movement::operator()() {
-    mov->applySpeed(fx, fy);
-    delete this;
 }

@@ -4,25 +4,35 @@
 #include <Arduino.h>
 #include <NewPing.h>
 
-namespace Ultrasonic {
+namespace AntiCollisionSystem {
 using pin_t = uint8_t;
+using cm_t = float;
+struct Data {
+    cm_t cm_front;
+    cm_t cm_left;
+    cm_t cm_right;
+};
 
-class Sensor {
+class Base {
   public:
-    using cm_t = float;
-    Sensor(pin_t trig, pin_t echo_front, pin_t echo_left, pin_t echo_right);
+    virtual ~Base() {}
 
-    struct Data {
-        cm_t cm_front;
-        cm_t cm_left;
-        cm_t cm_right;
-    };
+    virtual Data read(uint8_t it = 5);
+};
 
-    Data read(uint8_t it = 5);
+class TriUltrassonic : public AntiCollisionSystem::Base {
+  public:
+    TriUltrassonic(pin_t trig, pin_t echo_front, pin_t echo_left, pin_t echo_right);
+
+    Data read(uint8_t it = 5) override;
 
   private:
-    NewPing sensor_front, sensor_left, sensor_right;
+    struct _Sensors {
+        NewPing front, left, right;
+
+        _Sensors(pin_t trig, pin_t echo_front, pin_t echo_left, pin_t echo_right);
+    } sensors;
 };
-} // namespace Ultrasonic
+} // namespace AntiCollisionSystem
 
 #endif // ULTRASONIC_H

@@ -2,7 +2,6 @@
 #define MOTOR_H
 
 #include <Arduino.h>
-#include <Event.h>
 #include <Servo.h>
 
 namespace Motor {
@@ -29,12 +28,6 @@ class Base {
     virtual ~Base() {}
 };
 
-/*
- * I literally received a fucking continuous rotation servo motor whitout any kind of labeling
- * it is literally a black pandora box, there is no fucking way to tell how to ajust the power output
- * making me believe the 3 i'm using for the robot have diferrent power output. making me going insane
- * trying to make this piece of garbage walk straight.
- */
 class ContinuousRotationServo : public Motor::Base {
   public:
     //@param pin: pin connected to the signal pin of the Servo.
@@ -51,18 +44,5 @@ class ContinuousRotationServo : public Motor::Base {
     bool inverse;
 };
 } // namespace Motor
-
-namespace Event {
-class Motor : public Event::Base {
-  public:
-    Motor(::Motor::Base *motor, String &valor);
-    void operator()() override;
-    ~Motor() override;
-
-  private:
-    ::Motor::Base *motor;
-    const String valor;
-};
-} // namespace Event
 
 #endif // MOTOR_H

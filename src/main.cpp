@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <BluetoothClient.h>
-#include <Event.h>
 #include <Logger.h>
 #include <Motor.h>
 #include <Movement.h>
@@ -36,7 +35,7 @@ class Robo {
     } speed_base, speed;
 };
 
-Event::Base *parseEvent(String &message, Robo *robo) {
+void parseEvent(String &message, Robo *robo) {
     String values = message.substring(2);
     size_t separator;
     switch (message[0]) {
@@ -51,7 +50,6 @@ Event::Base *parseEvent(String &message, Robo *robo) {
     default:
         break;
     }
-    return nullptr;
 }
 
 BluetoothClient::BluetoothClient bt_client(10, 11);
@@ -59,13 +57,18 @@ BluetoothClient::BluetoothClient bt_client(10, 11);
 void setup() {
     Serial.begin(9600);
     bt_client.begin(9600);
+#ifdef __DEBUG
     logger.setLogLevel(Logger::LogLevel::DEBUG);
+#else
+    logger.setLogLevel(Logger::LogLevel::RELEASE);
+#endif
 }
 
 void loop() {
     static Motor::ContinuousRotationServo motors[] = {{3, 170}, {5, 175}, {6, 190}};
     static Movement::Onmidirectional_3Wheels movement(&motors[0], &motors[1], &motors[2]);
-    static Ultrasonic::Sensor ultrasonic(2, A3, A4, A5);
+    static AntiCollisionSystem::TriUltrassonic tri_ultrasonic(2, A3, A4, A5);
+    static AntiCollisionSystem::Base *anti_collision_system = &tri_ultrasonic;
     static Robo robo(&movement);
 
     bt_client();
@@ -76,17 +79,18 @@ void loop() {
         parseEvent(message, &robo);
     }
 
-    auto data = ultrasonic.read();
+    auto data = anti_collision_system->read(5);
     logger.log(Logger::LogLevel::DEBUG, "====================");
+
     if (!(data.cm_front && data.cm_front < 20) && !(data.cm_left && data.cm_left < 20) && !(data.cm_right && data.cm_right < 20)) {
         robo.addSpeed(0, 0);
-    } else if (data.cm_front && data.cm_front < 20) {
+    } else if (data.cm_front && data.cm_front < 20 && (robo.getSpeed().x || robo.getSpeed().y)) {
         logger.log(Logger::LogLevel::DEBUG, "front");
         robo.addSpeed(map(data.cm_front, 20, 0, 50, 100) * cos(radians(60)), map(data.cm_front, 20, 0, 50, 100) * sin(radians(60)));
-    } else if (data.cm_left && data.cm_left < 20) {
+    } else if (data.cm_left && data.cm_left < 20 && (robo.getSpeed().x || robo.getSpeed().y)) {
         logger.log(Logger::LogLevel::DEBUG, "left");
         robo.addSpeed(map(data.cm_left, 20, 0, 50, 100) * cos(radians(300)), map(data.cm_left, 20, 0, 50, 100) * sin(radians(300)));
-    } else if (data.cm_right && data.cm_right < 20) {
+    } else if (data.cm_right && data.cm_right < 20 && (robo.getSpeed().x || robo.getSpeed().y)) {
         logger.log(Logger::LogLevel::DEBUG, "right");
         robo.addSpeed(map(data.cm_right, 20, 0, 50, 100) * cos(radians(180)), map(data.cm_right, 20, 0, 50, 100) * sin(radians(180)));
     }
