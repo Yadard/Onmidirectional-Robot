@@ -8,11 +8,14 @@ A Omnidirectional robot is a robot that uses onmidirecional wheels that makes po
 
 ## Components
 
- * 3 - Unkown Continious Rotation Servo Motor;
+ * 3 - Continious Rotation Servo Motor;
  * 1 - Bluetooth RS232 HC-05;
- * 1 - 7805CT;
+ * 2 - LM7805CT;
  * 3 - Ultrasonic Sensor;
  * 1 - Arduino UNO;
  * 3 - Onmidirectional Wheels;
- * 1 - Protoboard;
+ * 1 - Mini Protoboard;
+ * 1 - Capicitor 330nF;
+ * 1 - Capicitor 100nF;
+ * 2 - Li-ion bateries;
  * Chassi & Jumpers.
