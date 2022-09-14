@@ -10,6 +10,8 @@ Logger logger;
 
 #define LOG_EXPR(l, x) logger.log(l, '[', #x, "]: ", x)
 
+float bt_fx = 0, bt_fy = 0;
+
 Event::Base *parseEvent(String &message, Movement::Base *mov, Motor::Base *motors) {
     String values = message.substring(2);
     size_t separator;
@@ -20,7 +22,8 @@ Event::Base *parseEvent(String &message, Movement::Base *mov, Motor::Base *motor
         separator = values.indexOf(',');
         LOG_EXPR(Logger::LogLevel::DEBUG, values.substring(0, separator).toInt());
         LOG_EXPR(Logger::LogLevel::DEBUG, values.substring(separator + 1).toInt());
-        return new Event::Movement(mov, values.substring(0, separator).toInt(), values.substring(separator + 1).toInt());
+        bt_fx = values.substring(0, separator).toInt();
+        bt_fy = values.substring(separator + 1).toInt();
         break;
 
     case 'A':
@@ -46,7 +49,7 @@ void setup() {
 }
 
 void loop() {
-    static Motor::ContinuousRotationServo motors[] = {{3, 160, true}, {5, 170}, {6, 185}};
+    static Motor::ContinuousRotationServo motors[] = {{3, 160}, {5, 170}, {6, 185}};
     static Movement::Onmidirectional_3Wheels movement(&motors[0], &motors[1], &motors[2]);
     static Event::Base *event;
     static Ultrasonic::Sensor ultrasonic(2, A3, A4, A5);
@@ -61,36 +64,37 @@ void loop() {
         event = parseEvent(message, &movement, (Motor::Base *)motors);
         if (event)
             event->operator()();
-    } else if (timer_end - timer_start >= 5000) {
-        auto data = ultrasonic.read();
-        float fx = 0, fy = 100;
-
-        logger.log(Logger::LogLevel::DEBUG, "====================");
-        if (data.cm_front && data.cm_front < 10) {
-            logger.log(Logger::LogLevel::DEBUG, "front");
-            fx += map(data.cm_front, 10, 0, 0, 100) * cos(radians(210));
-            fy += map(data.cm_front, 10, 0, 0, 100) * sin(radians(210));
-        }
-        if (data.cm_left && data.cm_left < 10) {
-            logger.log(Logger::LogLevel::DEBUG, "left");
-            fx += map(data.cm_left, 10, 0, 0, 100) * cos(radians(150));
-            fy += map(data.cm_left, 10, 0, 0, 100) * sin(radians(150));
-        }
-        if (data.cm_right && data.cm_right < 10) {
-            logger.log(Logger::LogLevel::DEBUG, "right");
-            fx += map(data.cm_right, 10, 0, 0, 100) * cos(radians(0));
-            fy += map(data.cm_right, 10, 0, 0, 100) * sin(radians(0));
-        }
-
-        LOG_EXPR(Logger::LogLevel::DEBUG, data.cm_front);
-        LOG_EXPR(Logger::LogLevel::DEBUG, data.cm_left);
-        LOG_EXPR(Logger::LogLevel::DEBUG, data.cm_right);
-        logger.log(Logger::LogLevel::DEBUG, "--------------------");
-        LOG_EXPR(Logger::LogLevel::DEBUG, fx);
-        LOG_EXPR(Logger::LogLevel::DEBUG, fy);
-        logger.log(Logger::LogLevel::DEBUG, "====================");
-
-        if (fx && fy)
-            movement.applySpeed(fx, fy);
     }
+
+    auto data = ultrasonic.read();
+    float fx = bt_fx, fy = bt_fy;
+
+    logger.log(Logger::LogLevel::DEBUG, "====================");
+    if (data.cm_front && data.cm_front < 20) {
+        logger.log(Logger::LogLevel::DEBUG, "front");
+        fx += map(data.cm_front, 20, 0, 50, 100) * cos(radians(60));
+        fy += map(data.cm_front, 20, 0, 50, 100) * sin(radians(60));
+    }
+    if (data.cm_left && data.cm_left < 20) {
+        logger.log(Logger::LogLevel::DEBUG, "left");
+        fx += map(data.cm_left, 20, 0, 50, 100) * cos(radians(300));
+        fy += map(data.cm_left, 20, 0, 50, 100) * sin(radians(300));
+    }
+    if (data.cm_right && data.cm_right < 20) {
+        logger.log(Logger::LogLevel::DEBUG, "right");
+        fx += map(data.cm_right, 20, 0, 50, 100) * cos(radians(180));
+        fy += map(data.cm_right, 20, 0, 50, 100) * sin(radians(180));
+    }
+
+    LOG_EXPR(Logger::LogLevel::DEBUG, data.cm_front);
+    LOG_EXPR(Logger::LogLevel::DEBUG, data.cm_left);
+    LOG_EXPR(Logger::LogLevel::DEBUG, data.cm_right);
+    logger.log(Logger::LogLevel::DEBUG, "--------------------");
+    LOG_EXPR(Logger::LogLevel::DEBUG, bt_fx);
+    LOG_EXPR(Logger::LogLevel::DEBUG, bt_fy);
+    LOG_EXPR(Logger::LogLevel::DEBUG, fx);
+    LOG_EXPR(Logger::LogLevel::DEBUG, fy);
+    logger.log(Logger::LogLevel::DEBUG, "====================");
+
+    movement.applySpeed(fx, fy);
 }

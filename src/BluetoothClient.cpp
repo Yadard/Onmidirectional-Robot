@@ -8,7 +8,7 @@ String BluetoothClient::BluetoothClient::readMessage() {
 }
 
 void BluetoothClient::BluetoothClient::operator()() {
-    if (this->available()) {
+    while (this->available()) {
         const int16_t data = this->read();
         if (data != -1) {
             if (data == '{') {

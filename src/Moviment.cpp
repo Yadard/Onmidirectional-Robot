@@ -18,6 +18,7 @@ Movement::Onmidirectional_3Wheels::Onmidirectional_3Wheels(Motor::Base *MotorA, 
     movement_matrix[2][2] = 1;
 
     Matrix.Invert((mtx_type *)movement_matrix, 3);
+    stop();
 }
 
 bool Movement::Onmidirectional_3Wheels::applySpeed(double sx, double sy) {
@@ -43,7 +44,7 @@ bool Movement::Onmidirectional_3Wheels::stop() {
 }
 
 Event::Movement::Movement(::Movement::Base *mov, double fx, double fy) : mov(mov), fx(fx), fy(fy) {}
-Event::Movement::~Movement() {  }
+Event::Movement::~Movement() {}
 void Event::Movement::operator()() {
     mov->applySpeed(fx, fy);
     delete this;
